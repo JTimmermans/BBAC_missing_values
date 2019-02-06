@@ -12,6 +12,8 @@ The packages used are:
 
 See the [requirements](requirements.txt) for full list of dependencies.
 
+Before deployment set the correct path to your R environment in [rpy2_setup.py](rpy2_setup.py).
+
 ### Example
 
 Input:
