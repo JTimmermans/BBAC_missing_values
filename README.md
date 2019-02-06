@@ -11,6 +11,7 @@ The packages used are:
 * python 3.6.8
 * numpy 1.15.4
 * rpy2 2.9.4
+
 See the [requirements](requirements.txt) for full list of dependencies.
 
 ### Example
