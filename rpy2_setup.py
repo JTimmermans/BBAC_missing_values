@@ -8,8 +8,6 @@ os.environ['R_HOME'] = r'C:\ProgramData\Anaconda3\envs\BBAC_missing_values\Lib\R
 import rpy2.robjects as robjects
 import rpy2.robjects.numpy2ri
 
-
-
 # Set automatic numpy to R array conversion
 rpy2.robjects.numpy2ri.activate()
 
