@@ -4,8 +4,6 @@ Python matrix imputation implementation of the [Bregman Block Average Co-cluster
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
-
 ### Requirements
 The packages used are:
 * python 3.6.8
