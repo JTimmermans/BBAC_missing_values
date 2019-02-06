@@ -1,14 +1,9 @@
-import os
+from rpy2_setup import *
 import numpy as np
-# Set the correct R environment
-os.environ['R_HOME'] = r'C:\ProgramData\Anaconda3\envs\BBAC_missing_values\Lib\R'
-import rpy2.robjects as robjects
-import rpy2.robjects.numpy2ri
-# Set automatic numpy to R array conversion
-rpy2.robjects.numpy2ri.activate()
-# Other R functionality
-r_source = robjects.r['source']
-r_setseed = robjects.r['set.seed']
+# ignore dividing by zero or np.nan
+np.seterr(divide='ignore', invalid='ignore')
+
+
 
 class BBAC():
     '''A missing value imputation using the BBAC alghorithm by Banjeree et al,
@@ -19,6 +14,7 @@ class BBAC():
         n_cltr_r(int): Number of row clusters. .
         n_cltr_c(int): Number of column clusters. .
         distance(str): Distance measure, either 'e' for Euclidean, or 'd' for Bregman I-divergence. .
+        scheme(int):   Scheme 1 to 6 from Banjeree et al.,
         source(str):   Path to the original bbac.R file, available from https://github.com/fnyanez/bbac . .
         '''
 
@@ -38,17 +34,17 @@ class BBAC():
             missing value(type):  Symbol (use other word) to note the missing values (e.g., np.nan, 0, or -99999). .
             '''
 
-        self.missing_value = missing_value
-        itemindex = np.argwhere(self.Z == self.missing_value)
-        self.missing_indices = itemindex
+        itemindex = np.argwhere(self.Z == missing_value)
+        missing_indices = itemindex
+        return missing_value, missing_indices
 
-    def create_coclustering(self):
+    def coclustering(self):
         '''Returns the row, column and co-clusters
 
         Out:
             row_cltr(array): Row clustering array. .
             col_cltr(array): Column clustering array. .
-            co_cltr(array):  Co-clustering indices. .
+            co_cltr(array):  Co-cluster array. .
             '''
 
         # Set the correct source and seed
@@ -58,17 +54,22 @@ class BBAC():
         # Retrieve BBAC function from R
         bbac = robjects.r['bbac']
 
+        # Retrieve missing value information
+        self.missing_value, self.missing_indices = self.get_missing()
+
+        # Create W
+        # ToDo USE A W MATRIX, R part errors
+        W = np.zeros((self.n_row, self.n_col), np.int)
+        for i in self.missing_indices:
+            W[i[0], i[1]] = 1
+        self.W = numpy_to_r(W)
+
         # Create co-clustering
-        co_clustering = bbac(self.Z, k=self.n_cltr_r, l=self.n_cltr_c, distance=self.distance, scheme=6)
+        co_clustering = bbac(self.Z, k=self.n_cltr_r, l=self.n_cltr_c, distance=self.distance, scheme=2)
 
         # Set row and column clusters
         self.row_cltr = np.array(co_clustering[0])
         self.col_cltr = np.array(co_clustering[1])
-
-        # Set co_clusters
-        co_cltr = np.zeros((self.n_cltr_r, self.n_cltr_c))
-        # ToDo define co-clusters as indices
-        self.co_cltr = np.array(co_cltr)
 
     def calculate_averages(self):
         '''Returns the averages for prediction
@@ -81,10 +82,9 @@ class BBAC():
             co_cltr_avgarray):  Array 1 x m array with the averages per co-cluster. .
             '''
 
-
         # Add row and column averages
-        self.row_avg = self.Z.mean(1)
-        self.col_avg = self.Z.mean(0)
+        row_avg = self.Z.mean(1)
+        col_avg = self.Z.mean(0)
 
         # Initialize empty average arrays:
         row_cltr_avg = np.zeros(self.n_row, np.double)
@@ -101,37 +101,73 @@ class BBAC():
         col_cltr_sum = np.zeros(self.n_cltr_c, np.double)
         co_cltr_sum = np.zeros((self.n_cltr_r, self.n_cltr_c), np.double)
 
-        # Compute sums, counts, and averages for rows clusters
-        for i in range(0, self.n_cltr_r):
+        # Compute sums, counts, and averages for row clusters
+        # ToDo, do not count values for missing indices
+        for cluster in range(0, self.n_cltr_r):
             for row in range(0, self.n_row):
-                if self.row_cltr[row, i] == 1.0:
-                    row_cltr_count[i] += 1
-                    print(self.Z[row])
-                    print(self.Z[row].mean())
-                    row_cltr_sum[i] += self.Z[row].mean()
+                if self.row_cltr[row, cluster] == 1.0:
+
+                    row_cltr_count[cluster] += 1
+                    row_cltr_sum[cluster] += self.Z[row].mean()
         row_cltr_avg = np.divide(row_cltr_sum, row_cltr_count)
 
-        # Compute sums, counts, and averages for rows clusters
+        # Compute sums, counts, and averages for column clusters
+        # ToDo, do not count values for missing indices
+        for cluster in range(0, self.n_cltr_c):
+            for col in range(0, self.n_col):
+                if self.col_cltr[col, cluster] == 1.0:
+                    col_cltr_count[cluster] += 1
+                    col_cltr_sum[cluster] += self.Z[:,col].mean()
+        col_cltr_avg = np.divide(col_cltr_sum, col_cltr_count)
 
+        # Compute sums, counts, and averages for co-cluster
+        # ToDo, do not count values for missing indices
+        for rc in range(0, self.n_cltr_r):
+            for row in range(0, self.n_row):
+                if self.row_cltr[row, rc] == 1.0:
+                    for cc in range(0, self.n_cltr_c):
+                        for col in range(0, self.n_col):
+                            if self.col_cltr[col, cc] == 1.0:
+                                co_cltr_count[rc, cc] += 1
+                                co_cltr_sum[rc, cc] += self.Z[row, col]
+        co_cltr_avg = np.divide(co_cltr_sum, co_cltr_count)
 
-        # ToDo add column clusters averages
-        self.col_cltr_avg = None
-
-        # Add co-cluster averages
-        n_co_cltr = self.n_cltr_r * self.n_cltr_c
-        # ToDo add co-cluster averages
-        self.co_cltr_avg = None
+        return row_avg, col_avg, row_cltr_avg, col_cltr_avg, co_cltr_avg
 
     def predict(self):
-        '''Predicts the missing values and returns the new array
+        '''Predicts the missing values and returns an imputed array
 
             Out:
-                Z(array): m x n numpy array with imputed missing values. .
+                Z_imputed(array): m x n numpy array with imputed missing values. .
         '''
 
+        # Retrieve clustering averages
+        self.row_avg, self.col_avg, self.row_cltr_avg, self.col_cltr_avg, self.co_cltr_avg = self.calculate_averages()
+
+        # Create a copy of the array to store imputed values
+        self.Z_imputed = self.Z
+
+
         for index in self.missing_indices:
+            # Determine corresponding row cluster index
+            for rc in range(0, self.n_cltr_r):
+                if self.row_cltr[index[0], rc] == 1.0:
+                    break
+            # Determine corresponding column cluster index
+            for cc in range(0, self.n_cltr_c):
+                if self.col_cltr[index[1], cc] == 1.0:
+                    break
+
+            # Determine corresponding co-cluster index
+            for rcc in range(0, self.n_cltr_r):
+                if self.row_cltr[index[0], rc] == 1.0:
+                    for ccc in range(0, self.n_cltr_c):
+                        if self.col_cltr[index[1], cc] == 1.0:
+                            break
+
+            # Estimate value for missing index
             # estimation = average of co-cluster + (row mean - row cluster mean) + (column mean - column cluster mean)
-            self.Z[index] = self.co_cltr_avg + (self.row_avg - self.row_cltr_avg) + (self.col_avg - self.col_cltr_avg)
-            print(index)
+            self.Z[index[0], index[1]] = self.co_cltr_avg[rcc,ccc] + (self.row_avg[index[0]] - self.row_cltr_avg[rc]) + (self.col_avg[index[1]] - self.col_cltr_avg[cc])
+
 
 
