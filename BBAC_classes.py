@@ -1,5 +1,8 @@
 from rpy2_setup import *
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.set()
 # ignore dividing by zero or np.nan
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -9,13 +12,13 @@ class BBAC():
     '''A missing value imputation using the BBAC alghorithm by Banjeree et al,
     using the previsouly created R script from <instert github>
 
-    Args:
-        Z(array):      A m x n numpy array. .
-        n_cltr_r(int): Number of row clusters. .
-        n_cltr_c(int): Number of column clusters. .
-        distance(str): Distance measure, either 'e' for Euclidean, or 'd' for Bregman I-divergence. .
-        scheme(int):   Scheme 1 to 6 from Banjeree et al.,
-        source(str):   Path to the original bbac.R file, available from https://github.com/fnyanez/bbac . .
+
+    :param: Z(array):      A m x n numpy array.
+    :param: n_cltr_r(int): Number of row clusters.
+    :param: n_cltr_c(int): Number of column clusters.
+    :param: distance(str): Distance measure, either 'e' for Euclidean, or 'd' for Bregman I-divergence.
+    :param: scheme(int):   Scheme 1 to 6 from Banjeree et al.,.
+    :param: source(str):   Path to the original bbac.R file, available at https://github.com/fnyanez/bbac .
         '''
 
     def __init__(self, Z, n_cltr_r, n_cltr_c, distance='d', source=r"D:\g_drive\Gima\Thesis\Github\R_bbac\bbac.R"):
@@ -30,8 +33,10 @@ class BBAC():
     def get_missing(self, missing_value=0):
         '''Returns the indices of  missing values in matrix Z
 
-        Args:
-            missing value(type):  Symbol (use other word) to note the missing values (e.g., np.nan, 0, or -99999). .
+
+        :param: missing value(type):  Symbol (use other word) to note the missing values (e.g., np.nan, 0, or -99999).
+        :return: missing_value(str || numeric): Symbol (use other word) to note the missing values (e.g., np.nan, 0, or -99999).
+        :return: missing_indices(array): Array containing the indices of missing values in self.Z.
             '''
 
         itemindex = np.argwhere(self.Z == missing_value)
@@ -39,12 +44,11 @@ class BBAC():
         return missing_value, missing_indices
 
     def coclustering(self):
-        '''Returns the row, column and co-clusters
+        '''Returns the row, column and co-clusters.
 
-        Out:
-            row_cltr(array): Row clustering array. .
-            col_cltr(array): Column clustering array. .
-            co_cltr(array):  Co-cluster array. .
+        :return: row_cltr(array): Row clustering array.
+        :return: col_cltr(array): Column clustering array.
+        :return: co_cltr(array):  Co-cluster array.
             '''
 
         # Set the correct source and seed
@@ -72,14 +76,13 @@ class BBAC():
         self.col_cltr = np.array(co_clustering[1])
 
     def calculate_averages(self):
-        '''Returns the averages for prediction
+        '''Returns the clustering averages for prediction.
 
-        Out:
-            row_avg(array):     Array 1 x m array with the averages per row. .
-            col_avgarray):      Array 1 x m array with the averages per column. .
-            row_cltr_avgarray): Array 1 x m array with the averages per row cluster. .
-            col_cltr_avgarray): Array 1 x m array with the averages per column cluster. .
-            co_cltr_avgarray):  Array 1 x m array with the averages per co-cluster. .
+        :return: row_avg(array):     Array 1 x m array with the averages per row.
+        :return: col_avgarray):      Array 1 x m array with the averages per column.
+        :return: row_cltr_avg(array): Array 1 x m array with the averages per row cluster.
+        :return: col_cltr_avg(array): Array 1 x m array with the averages per column cluster.
+        :return: co_cltr_avg(array):  Array 1 x m array with the averages per co-cluster.
             '''
 
         # Add row and column averages
@@ -134,10 +137,9 @@ class BBAC():
         return row_avg, col_avg, row_cltr_avg, col_cltr_avg, co_cltr_avg
 
     def predict(self):
-        '''Predicts the missing values and returns an imputed array
+        '''Predicts the missing values and returns an imputed array.
 
-            Out:
-                Z_imputed(array): m x n numpy array with imputed missing values. .
+        :return: Z_imputed(array): m x n numpy array with imputed missing values.
         '''
 
         # Retrieve clustering averages
@@ -164,10 +166,36 @@ class BBAC():
                     for ccc in range(0, self.n_cltr_c):
                         if self.col_cltr[index[1], cc] == 1.0:
                             break
-
             # Estimate value for missing index
             # estimation = average of co-cluster + (row mean - row cluster mean) + (column mean - column cluster mean)
-            self.Z[index[0], index[1]] = self.co_cltr_avg[rcc,ccc] + (self.row_avg[index[0]] - self.row_cltr_avg[rc]) + (self.col_avg[index[1]] - self.col_cltr_avg[cc])
+            self.Z_imputed[index[0], index[1]] = self.co_cltr_avg[rcc,ccc] + (self.row_avg[index[0]] - self.row_cltr_avg[rc]) + (self.col_avg[index[1]] - self.col_cltr_avg[cc])
 
+    def visualize(self, path, outname, xlabel, ylabel):
+        '''
+        Creates .png images of the original array Z and the imputed array Z_imputed as heatmaps. Missing values are displayed in grey.
 
+        :param: path(str): Path to store the resulting figures.
+        :param: outname(str): Name of the resulting figures.
+        :param: xlabel(str): Name of the x-axis label.
+        :param: ylabel(str): Name pf the y-axis label.
+        :return: <>_Z.png(.png): Heatmap of original array. with missing values.
+        :return: <>_Z_imputed.png(.png): Heatmap of imputed array.
+        '''
 
+        def plot_heatmap(array, mask=mask, Z='_Z'):
+            # Create and store heatmap of the array with an mask
+            ax = sns.heatmap(self.Z, cmap="YlGnBu", mask=mask)
+            ax.set(xlabel=xlabel, ylabel=ylabel)
+            fig = ax.get_figure()
+            fig.savefig('{}/{}{}.png'.format(path, outname,Z))
+            # Clear current figure
+            fig.clf()
+
+        # Create an mask to display missing values in orignal array
+        mask = 1 - self.W
+
+        # Plot orignal matrix with missing values
+        plot_heatmap(self.Z, mask=mask, Z='_Z')
+
+        # Plot imputed matrix
+        plot_heatmap(self.Z_imputed, mask=None, Z='_Z_imputed')

@@ -21,8 +21,10 @@ def basic_test():
     test = BBAC(Z, n_cltr_r=3, n_cltr_c=2, distance='e')
     test.coclustering()
     test.predict()
+    test.visualize(path=r'D:\g_drive\Gima\Thesis\Media', outname='test', xlabel='Columns', ylabel='Rows')
     # print(test.col_cltr, '\n\n', test.row_cltr)
     print(test.Z_imputed)
+
 
 def larger_array_test():
     #do something
