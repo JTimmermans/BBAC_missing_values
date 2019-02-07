@@ -41,6 +41,9 @@ test = BBAC(Z, n_cltr_r=3, n_cltr_c=2, distance='e')
 test.coclustering()
 test.predict()
 print(test.Z_imputed)
+
+# Visualize results and save as .png
+test.visualize(path='C:\yourpath', outname='test', xlabel='Columns', ylabel='Rows')
 ```
 
 Output:
@@ -53,6 +56,9 @@ Output:
  [7.8        8.         8.         5.2        5.3       ]
  [7.5        7.8        7.6        5.1        5.2       ]]
 ```
+Original matrix with missing values as grey blocks                                                                                      | Imputed matrix
+:--------:|:---------:
+![Alt text](/images/test_Z.png?raw=true "Original matrix with missing values as grey blocks")  | ![Alt text](/images/test_Z_imputed.png?raw=true "Imputed matrix")
 
 
 ## Authors
