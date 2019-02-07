@@ -13,7 +13,7 @@ The packages used are:
 
 See the [requirements](requirements.txt) for full list of dependencies.
 
-Before deployment set the correct path to both your R environment, and the location of the bbac.r repository in [rpy2_setup.py](rpy2_setup.py).
+Before deployment set the correct path to both your R environment, and the location of the [bbac.r](https://github.com/fnyanez/bbac) repository in [rpy2_setup.py](rpy2_setup.py).
 
 ### Example
 
