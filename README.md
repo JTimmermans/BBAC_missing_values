@@ -9,10 +9,11 @@ The packages used are:
 * python 3.6.8
 * numpy 1.15.4
 * rpy2 2.9.4
+* seaborn 0.9.0
 
 See the [requirements](requirements.txt) for full list of dependencies.
 
-Before deployment set the correct path to your R environment in [rpy2_setup.py](rpy2_setup.py).
+Before deployment set the correct path to both your R environment, and the location of the [bbac.r](https://github.com/fnyanez/bbac) repository in [rpy2_setup.py](rpy2_setup.py).
 
 ### Example
 
@@ -41,18 +42,24 @@ test = BBAC(Z, n_cltr_r=3, n_cltr_c=2, distance='e')
 test.coclustering()
 test.predict()
 print(test.Z_imputed)
+
+# Visualize results and save as .png
+test.visualize(path='C:\yourpath', outname='test', xlabel='Columns', ylabel='Rows')
 ```
 
 Output:
 ```python
 [[2.5        3.         3.2        5.1        5.3       ]
  [2.5        3.2        3.         5.         5.5       ]
- [5.2        5.2        6.20142857 3.1        3.2       ]
- [5.19380952 5.         5.         3.2        3.1       ]
- [5.         5.2        5.1        5.79857143 3.1       ]
+ [5.2        5.2        4.87630952 3.1        3.2       ]
+ [4.5607326  5.         5.         3.2        3.1       ]
+ [5.         5.2        5.1        4.47345238 3.1       ]
  [7.8        8.         8.         5.2        5.3       ]
  [7.5        7.8        7.6        5.1        5.2       ]]
 ```
+Original matrix with missing values as grey blocks                                                                                      | Imputed matrix
+:--------:|:---------:
+![Alt text](/images/test_Z.png?raw=true "Original matrix with missing values as grey blocks")  | ![Alt text](/images/test_Z_imputed.png?raw=true "Imputed matrix")
 
 
 ## Authors
