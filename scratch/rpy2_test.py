@@ -10,6 +10,7 @@ import numpy as np
 # Import and apply source function from R
 r_source = robjects.r['source']
 r_source(r"D:\g_drive\Gima\Thesis\Github\R_bbac\bbac.R")
+bbac = robjects.r['bbac']
 
 # Set seed
 r_setseed = robjects.r['set.seed']

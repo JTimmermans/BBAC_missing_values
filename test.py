@@ -1,5 +1,4 @@
 from BBAC_classes import *
-from rpy2_setup import *
 import os
 import timeit
 

@@ -11,9 +11,15 @@ import rpy2.robjects.numpy2ri
 # Set automatic numpy to R array conversion
 rpy2.robjects.numpy2ri.activate()
 
+# Import BBAC functionality
+r_source = robjects.r['source']
+r_source(r"D:\g_drive\Gima\Thesis\Github\R_bbac\bbac.R")
+bbac = robjects.r['bbac']
+
 # Other R functionality
 r_source = robjects.r['source']
 r_setseed = robjects.r['set.seed']
+r_setseed(1)
 
 def numpy_to_r(array):
     '''Converts a Python numpy array to an array suitable for r2py

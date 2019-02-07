@@ -1,4 +1,4 @@
-from rpy2_setup import *
+from rpy2_setup import bbac, numpy_to_r
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -21,12 +21,11 @@ class BBAC():
     :param: source(str):   Path to the original bbac.R file, available at https://github.com/fnyanez/bbac .
         '''
 
-    def __init__(self, Z, n_cltr_r, n_cltr_c, distance='d', source=r"D:\g_drive\Gima\Thesis\Github\R_bbac\bbac.R"):
+    def __init__(self, Z, n_cltr_r, n_cltr_c, distance='d'):
         # initial variables
         self.Z = Z
         self.n_cltr_r = n_cltr_r
         self.n_cltr_c = n_cltr_c
-        self.source=source
         self.distance = distance
         self.n_row, self.n_col = np.shape(self.Z)[0], np.shape(self.Z)[1]
 
@@ -50,13 +49,6 @@ class BBAC():
         :return: col_cltr(array): Column clustering array.
         :return: co_cltr(array):  Co-cluster array.
             '''
-
-        # Set the correct source and seed
-        r_source(self.source)
-        r_setseed(1)
-
-        # Retrieve BBAC function from R
-        bbac = robjects.r['bbac']
 
         # Retrieve missing value information
         self.missing_value, self.missing_indices = self.get_missing()
@@ -182,7 +174,8 @@ class BBAC():
         :return: <>_Z_imputed.png(.png): Heatmap of imputed array.
         '''
 
-        def plot_heatmap(array, mask=mask, Z='_Z'):
+        # Function to plot heatmaps
+        def plot_heatmap(array, mask, Z='_Z'):
             # Create and store heatmap of the array with an mask
             ax = sns.heatmap(self.Z, cmap="YlGnBu", mask=mask)
             ax.set(xlabel=xlabel, ylabel=ylabel)
