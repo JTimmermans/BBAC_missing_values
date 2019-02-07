@@ -59,9 +59,9 @@ class BBAC():
 
         # Create W
         # ToDo USE A W MATRIX, R part errors
-        W = np.zeros((self.n_row, self.n_col), np.int)
+        W = np.ones((self.n_row, self.n_col), np.int)
         for i in self.missing_indices:
-            W[i[0], i[1]] = 1
+            W[i[0], i[1]] = 0
         self.W = numpy_to_r(W)
 
         # Create co-clustering
@@ -92,9 +92,9 @@ class BBAC():
         co_cltr_avg = np.zeros((self.n_cltr_r, self.n_cltr_c), np.double)
 
         # Initialize empty count arrays
-        row_cltr_count = np.zeros(self.n_cltr_r, np.int)
-        col_cltr_count = np.zeros(self.n_cltr_c, np.int)
-        co_cltr_count = np.zeros((self.n_cltr_r, self.n_cltr_c), np.int)
+        row_cltr_count = np.zeros(self.n_cltr_r, np.double)
+        col_cltr_count = np.zeros(self.n_cltr_c, np.double)
+        co_cltr_count = np.zeros((self.n_cltr_r, self.n_cltr_c), np.double)
 
         # Initialize empty sum arrays
         row_cltr_sum = np.zeros(self.n_cltr_r, np.double)
@@ -102,33 +102,32 @@ class BBAC():
         co_cltr_sum = np.zeros((self.n_cltr_r, self.n_cltr_c), np.double)
 
         # Compute sums, counts, and averages for row clusters
-        # ToDo, do not count values for missing indices
         for cluster in range(0, self.n_cltr_r):
             for row in range(0, self.n_row):
                 if self.row_cltr[row, cluster] == 1.0:
-
-                    row_cltr_count[cluster] += 1
+                    # Increment count by self.W matrix, if one of n values in the row is missing, count is 1-1/n
+                    row_cltr_count[cluster] += self.W[row, :].mean()
                     row_cltr_sum[cluster] += self.Z[row].mean()
         row_cltr_avg = np.divide(row_cltr_sum, row_cltr_count)
 
         # Compute sums, counts, and averages for column clusters
-        # ToDo, do not count values for missing indices
         for cluster in range(0, self.n_cltr_c):
             for col in range(0, self.n_col):
                 if self.col_cltr[col, cluster] == 1.0:
-                    col_cltr_count[cluster] += 1
+                    # Increment count by self.W matrix, if one of n values in the column is missing, count is 1-1/n
+                    col_cltr_count[cluster] += self.W[:, col].mean()
                     col_cltr_sum[cluster] += self.Z[:,col].mean()
         col_cltr_avg = np.divide(col_cltr_sum, col_cltr_count)
 
         # Compute sums, counts, and averages for co-cluster
-        # ToDo, do not count values for missing indices
         for rc in range(0, self.n_cltr_r):
             for row in range(0, self.n_row):
                 if self.row_cltr[row, rc] == 1.0:
                     for cc in range(0, self.n_cltr_c):
                         for col in range(0, self.n_col):
                             if self.col_cltr[col, cc] == 1.0:
-                                co_cltr_count[rc, cc] += 1
+                                # Increment count by self.W matrix, if value is missing, W matrix = 0, count+= 0
+                                co_cltr_count[rc, cc] += self.W[row, col]
                                 co_cltr_sum[rc, cc] += self.Z[row, col]
         co_cltr_avg = np.divide(co_cltr_sum, co_cltr_count)
 
@@ -153,6 +152,7 @@ class BBAC():
             for rc in range(0, self.n_cltr_r):
                 if self.row_cltr[index[0], rc] == 1.0:
                     break
+
             # Determine corresponding column cluster index
             for cc in range(0, self.n_cltr_c):
                 if self.col_cltr[index[1], cc] == 1.0:
