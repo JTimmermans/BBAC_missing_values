@@ -1,6 +1,6 @@
 # BBAC missing value imputation
 
-Python matrix imputation implementation of the [Bregman Block Average Co-clustering (BBAC) algorithm](http://www.jmlr.org/papers/volume8/banerjee07a/banerjee07a.pdf). Currently excecuted using the R functionality from [fnyanez](https://github.com/fnyanez/bbac).
+Python matrix imputation implementation of the [Bregman Block Average Co-clustering (BBAC) algorithm](http://www.jmlr.org/papers/volume8/banerjee07a/banerjee07a.pdf). Currently co-cluster using the R functionality from [fnyanez](https://github.com/fnyanez/bbac).
 
 ## Getting Started
 
@@ -13,7 +13,7 @@ The packages used are:
 
 See the [requirements](requirements.txt) for full list of dependencies.
 
-Before deployment set the correct path to both your R environment, and the location of the [bbac.r](https://github.com/fnyanez/bbac) repository in [rpy2_setup.py](rpy2_setup.py).
+Before deployment set the correct path to your R environment in [rpy2_setup.py](rpy2_setup.py).
 
 ### Example
 
