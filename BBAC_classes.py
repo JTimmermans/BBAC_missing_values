@@ -21,13 +21,14 @@ class BBAC():
     :param: source(str):   Path to the original bbac.R file, available at https://github.com/fnyanez/bbac .
         '''
 
-    def __init__(self, Z, n_cltr_r, n_cltr_c, distance='d'):
+    def __init__(self, Z, n_cltr_r, n_cltr_c, scheme=2, distance='d'):
         # initial variables
         self.Z = Z
         self.n_cltr_r = n_cltr_r
         self.n_cltr_c = n_cltr_c
         self.distance = distance
         self.n_row, self.n_col = np.shape(self.Z)[0], np.shape(self.Z)[1]
+        self.scheme = scheme
 
     def get_missing(self, missing_value=0):
         '''Returns the indices of  missing values in matrix Z
@@ -61,7 +62,7 @@ class BBAC():
         self.W = numpy_to_r(W)
 
         # Create co-clustering
-        co_clustering = bbac(self.Z, W = self.W,  k=self.n_cltr_r, l=self.n_cltr_c, nruns=10, distance=self.distance, scheme=2)
+        co_clustering = bbac(self.Z, W = self.W,  k=self.n_cltr_r, l=self.n_cltr_c, nruns=10, distance=self.distance, scheme=self.scheme)
 
         # Set row and column clusters
         self.row_cltr = np.array(co_clustering[0])
@@ -200,7 +201,7 @@ class BBAC():
         # Function to plot heatmaps
         def plot_heatmap(array, mask, Z='_Z'):
             # Create and store heatmap of the array with an mask
-            ax = sns.heatmap(self.Z, cmap="YlGnBu", mask=mask)
+            ax = sns.heatmap(array, cmap="YlGnBu", mask=mask)
             ax.set(xlabel=xlabel, ylabel=ylabel)
             fig = ax.get_figure()
             fig.savefig('{}/{}{}.png'.format(path, outname,Z))
@@ -211,16 +212,16 @@ class BBAC():
         mask = 1 - self.W
 
         # Plot orignal matrix with missing values
-        plot_heatmap(self.Z, mask=mask, Z='_Z')
+        plot_heatmap(array=self.Z, mask=mask, Z='_Z')
 
         # Plot imputed matrix
-        plot_heatmap(self.Z_imputed, mask=None, Z='_Z_imputed')
+        plot_heatmap(array=self.Z_imputed, mask=None, Z='_Z_imputed')
 
         # Retrieve re-ordered W and Z arrays
-        self.Z_rd, self.W_rd = self.re_order_matrix()
+        Z_rd, W_rd = self.re_order_matrix()
 
         # Create mask for re-orederd array
-        r_mask = 1 - self.W_rd
+        r_mask = 1 - W_rd
 
         # Plot re-ordered matrix with missing values
-        plot_heatmap(self.Z_rd, mask=r_mask, Z='_Z_re_ordered.png')
+        plot_heatmap(Z_rd, mask=r_mask, Z='_Z_re_ordered.png')

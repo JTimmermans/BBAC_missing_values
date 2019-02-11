@@ -14,20 +14,16 @@ def basic_test():
 
     # Create array from lists and convert to rpy2-array
     array = np.array(list_of_list)
-    array[array == 0] = 0
     Z = numpy_to_r(array)
 
     # Use the prediction algorithm
-    test = BBAC(Z, n_cltr_r=3, n_cltr_c=2, distance='d')
+    test = BBAC(Z, n_cltr_r=3, n_cltr_c=2, distance='d', scheme=2)
     test.coclustering()
-    test.re_order_matrix()
     test.predict()
+
+    # Visualize arrays and print imputed array
     test.visualize(path=r'D:\g_drive\Gima\Thesis\Media', outname='test', xlabel='Columns', ylabel='Rows')
-    # print(test.col_cltr, '\n\n', test.row_cltr)
-    print(test.Z)
     print(test.Z_imputed)
-    print(test.W)
-    print(test.co_cltr_avg)
 
 
 def larger_array_test():
