@@ -61,7 +61,7 @@ class BBAC():
         self.W = numpy_to_r(W)
 
         # Create co-clustering
-        co_clustering = bbac(self.Z, k=self.n_cltr_r, l=self.n_cltr_c, distance=self.distance, scheme=2)
+        co_clustering = bbac(self.Z, W = self.W,  k=self.n_cltr_r, l=self.n_cltr_c, nruns=10, distance=self.distance, scheme=2)
 
         # Set row and column clusters
         self.row_cltr = np.array(co_clustering[0])
@@ -115,6 +115,7 @@ class BBAC():
         col_cltr_avg = np.divide(col_cltr_sum, col_cltr_count)
 
         # Compute sums, counts, and averages for co-cluster
+        # Something goes wrong here
         for rc in range(0, self.n_cltr_r):
             for row in range(0, self.n_row):
                 if self.row_cltr[row, rc] == 1.0:
@@ -128,6 +129,26 @@ class BBAC():
 
         return row_avg, col_avg, row_cltr_avg, col_cltr_avg, co_cltr_avg
 
+    def re_order_matrix(self):
+        '''Returns a re-ordered array of self.Z input.
+
+        :return: self.Z_rd(array): Re-ordered input array.
+        :return: self.W_rd(array): Re-ordered W-array.
+        '''
+        # Create row and column ordering
+        row_indices = [np.where(r==1)[0][0] for r in self.row_cltr]
+        row_ordering = np.argsort(row_indices)
+        col_indices = [np.where(r==1)[0][0] for r in self.col_cltr]
+        col_ordering = np.argsort(col_indices)
+
+        # Create re-orderd Z and W arrays
+        Z_rd = self.Z[:,col_ordering]
+        Z_rd = self.Z[row_ordering,:]
+        W_rd = self.W[:,col_ordering]
+        W_rd = self.W[row_ordering,:]
+
+        return Z_rd, W_rd
+
     def predict(self):
         '''Predicts the missing values and returns an imputed array.
 
@@ -138,8 +159,7 @@ class BBAC():
         self.row_avg, self.col_avg, self.row_cltr_avg, self.col_cltr_avg, self.co_cltr_avg = self.calculate_averages()
 
         # Create a copy of the array to store imputed values
-        self.Z_imputed = self.Z
-
+        self.Z_imputed = np.copy(self.Z)
 
         for index in self.missing_indices:
             # Determine corresponding row cluster index
@@ -160,7 +180,8 @@ class BBAC():
                             break
             # Estimate value for missing index
             # estimation = average of co-cluster + (row mean - row cluster mean) + (column mean - column cluster mean)
-            self.Z_imputed[index[0], index[1]] = self.co_cltr_avg[rcc,ccc] + (self.row_avg[index[0]] - self.row_cltr_avg[rc]) + (self.col_avg[index[1]] - self.col_cltr_avg[cc])
+            # Maybe this prediction method sucks or I am getting it wrong
+            self.Z_imputed[index[0], index[1]] = self.co_cltr_avg[rcc,ccc] #+ (self.row_avg[index[0]] - self.row_cltr_avg[rc]) + (self.col_avg[index[1]] - self.col_cltr_avg[cc])
 
     def visualize(self, path, outname, xlabel, ylabel):
         '''
@@ -172,6 +193,8 @@ class BBAC():
         :param: ylabel(str): Name pf the y-axis label.
         :return: <>_Z.png(.png): Heatmap of original array. with missing values.
         :return: <>_Z_imputed.png(.png): Heatmap of imputed array.
+        :return: <>_Z_re_ordered.png(.png): Heatmap of re-ordered array. with missing values.
+        :return: <>_Z_re_ordered_imputed.png(.png): Heatmap of the re-ordered imputed array.
         '''
 
         # Function to plot heatmaps
@@ -192,3 +215,12 @@ class BBAC():
 
         # Plot imputed matrix
         plot_heatmap(self.Z_imputed, mask=None, Z='_Z_imputed')
+
+        # Retrieve re-ordered W and Z arrays
+        self.Z_rd, self.W_rd = self.re_order_matrix()
+
+        # Create mask for re-orederd array
+        r_mask = 1 - self.W_rd
+
+        # Plot re-ordered matrix with missing values
+        plot_heatmap(self.Z_rd, mask=r_mask, Z='_Z_re_ordered.png')
