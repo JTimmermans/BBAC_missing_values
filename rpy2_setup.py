@@ -22,12 +22,12 @@ r_setseed = robjects.r['set.seed']
 r_setseed(1)
 
 def numpy_to_r(array):
-    '''Converts a Python numpy array to an array suitable for r2py
+    """Converts a Python numpy array to an array suitable for r2py
 
     Args:
         array(array):   A m x n numpy array
 
-    Out: array(array):  A m x n array usable in both numpy and rpy2'''
+    Out: array(array):  A m x n array usable in both numpy and rpy2"""
     nr, nc = np.shape(array)
     r_array = robjects.r.matrix(array, nrow=nr, ncol=nc)
     robjects.r.assign('array', r_array)
