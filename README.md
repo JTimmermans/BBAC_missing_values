@@ -1,6 +1,6 @@
 # BBAC missing value imputation
 
-Python matrix imputation implementation of the [Bregman Block Average Co-clustering (BBAC) algorithm](http://www.jmlr.org/papers/volume8/banerjee07a/banerjee07a.pdf). Currently co-cluster using the R functionality from [fnyanez](https://github.com/fnyanez/bbac).
+Python matrix imputation implementation of the [Bregman Block Average Co-clustering (BBAC) algorithm](http://www.jmlr.org/papers/volume8/banerjee07a/banerjee07a.pdf). Currently BBAC statistics are calculated using the R repository from [fnyanez](https://github.com/fnyanez/bbac), small adjustments have been made to incorporate the full capability of the W matrix.
 
 ## Getting Started
 
@@ -23,7 +23,7 @@ Input:
     from rpy2_setup import *
     import numpy as np
 
-    # Generate synthethic data
+    # Generate synthethic data, 0's indicate missing values
     list_of_list = [[2.5, 3.0, 3.2, 5.1, 5.3],
                     [2.5, 3.2, 3.0, 5.0, 0.0],
                     [5.0, 5.2, 5.1, 3.2, 3.1],
