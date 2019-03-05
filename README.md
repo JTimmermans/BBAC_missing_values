@@ -20,8 +20,6 @@ Before deployment set the correct path to your R environment in [rpy2_setup.py](
 Input:
 ```python
     from BBAC_classes import *
-    from rpy2_setup import *
-    import numpy as np
 
     # Generate synthethic data, 0's indicate missing values
     list_of_list = [[2.5, 3.0, 3.2, 5.1, 5.3],
@@ -71,11 +69,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* [Fnyanez](https://github.com/fnyanez/bbac) for implementing the BBAC algorithm in R.
+* Raul Zurita-Milla for supervising the project as part of my MSC thesis. 
 
-## To Do
-* A lot
-* More
-* Add a license.md
+
