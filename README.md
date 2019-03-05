@@ -40,7 +40,7 @@ Input:
     test.predict()
     
     # Visualize arrays and print imputed array
-    test.visualize(path=r'D:\g_drive\Gima\Thesis\Media', outname='test', xlabel='Columns', ylabel='Rows')
+    test.visualize(path=r'D:\media', outname='test', xlabel='Columns', ylabel='Rows')
     print(test.Z_imputed)
 ```
 
