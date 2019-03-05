@@ -20,11 +20,9 @@ Before deployment set the correct path to your R environment in [rpy2_setup.py](
 Input:
 ```python
     from BBAC_classes import *
-    from rpy2_setup import *
-    import numpy as np
 
     # Generate synthethic data, 0's indicate missing values
-    list_of_list = [[2.5, 3.0, 3.2, 5.1, 5.3],
+    list_of_list = [[0.0, 3.0, 3.2, 5.1, 5.3],
                     [2.5, 3.2, 3.0, 5.0, 0.0],
                     [5.0, 5.2, 5.1, 3.2, 3.1],
                     [5.2, 5.2, 0.0, 3.1, 3.2],
@@ -42,7 +40,7 @@ Input:
     test.predict()
     
     # Visualize arrays and print imputed array
-    test.visualize(path=r'D:\g_drive\Gima\Thesis\Media', outname='test', xlabel='Columns', ylabel='Rows')
+    test.visualize(path=r'D:\media', outname='test', xlabel='Columns', ylabel='Rows')
     print(test.Z_imputed)
 ```
 
@@ -58,7 +56,7 @@ Output:
 ```
 Original matrix with missing values as grey blocks                                                                                      | Imputed matrix
 :--------:|:---------:
-![Alt text](/images/test_Z.png?raw=true "Original matrix with missing values as grey blocks")  | ![Alt text](/images/test_Z_imputed.png?raw=true "Imputed matrix")
+![Alt text](/images/Z.png?raw=true "Original matrix with missing values as grey blocks")  | ![Alt text](/images/Z_imputed.png?raw=true "Imputed matrix")
 
 
 ## Authors
@@ -71,11 +69,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* [Fnyanez](https://github.com/fnyanez/bbac) for implementing the BBAC algorithm in R.
+* Raul Zurita-Milla for supervising the project as part of my MSc thesis. 
 
-## To Do
-* A lot
-* More
-* Add a license.md
+
