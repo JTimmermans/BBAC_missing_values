@@ -58,7 +58,7 @@ Output:
 ```
 Original matrix with missing values as grey blocks                                                                                      | Imputed matrix
 :--------:|:---------:
-![Alt text](/images/test_Z.png?raw=true "Original matrix with missing values as grey blocks")  | ![Alt text](/images/test_Z_imputed.png?raw=true "Imputed matrix")
+![Alt text](/images/Z.png?raw=true "Original matrix with missing values as grey blocks")  | ![Alt text](/images/Z_imputed.png?raw=true "Imputed matrix")
 
 
 ## Authors
