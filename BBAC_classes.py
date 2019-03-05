@@ -34,7 +34,6 @@ class BBAC():
     def get_missing(self, missing_value):
         """Returns the indices of  missing values in matrix Z
 
-
         :param: missing value(type):  Symbol (use other word) to note the missing values (e.g., np.nan, 0, or -99999).
         :return: missing_value(str || numeric): Symbol (use other word) to note the missing values (e.g., np.nan, 0, or -99999).
         :return: missing_indices(array): Array containing the indices of missing values in self.Z.
@@ -53,12 +52,10 @@ class BBAC():
         :return: co_cltr(array):  Co-cluster array.
             """
 
-
         # Retrieve missing value information
         self.missing_value, self.missing_indices = self.get_missing(missing_value=np.nan)
 
-        # Create W
-        # ToDo USE A W MATRIX, R part errors
+        # Create W matrix
         W = np.ones((self.n_row, self.n_col), np.int)
 
         for i in self.missing_indices:
@@ -87,7 +84,6 @@ class BBAC():
         # Initialize empty sum arrays
         co_cltr_sum = np.zeros((self.n_cltr_r, self.n_cltr_c), np.double)
 
-
         # Compute sums, counts, and averages for co-cluster
         for rc in range(0, self.n_cltr_r):
             for row in range(0, self.n_row):
@@ -108,6 +104,7 @@ class BBAC():
         :return: self.Z_rd(array): Re-ordered input array.
         :return: self.W_rd(array): Re-ordered W-array.
         """
+
         # Create row and column ordering
         row_indices = [np.where(r==1)[0][0] for r in self.row_cltr]
         row_ordering = np.argsort(row_indices)
