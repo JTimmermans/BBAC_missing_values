@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="67e56b06-9b43-4361-b8ce-a2d5d799a8b5" name="Default Changelist" comment="" />
+    <list default="true" id="67e56b06-9b43-4361-b8ce-a2d5d799a8b5" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/BBAC_classes.py" beforeDir="false" afterPath="$PROJECT_DIR$/BBAC_classes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scratch/rpy2_test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,7 +17,7 @@
       <usages-collector id="statistics.lifecycle.project">
         <counts>
           <entry key="project.closed" value="37" />
-          <entry key="project.open.time.0" value="10" />
+          <entry key="project.open.time.0" value="11" />
           <entry key="project.open.time.15" value="1" />
           <entry key="project.open.time.19" value="1" />
           <entry key="project.open.time.31" value="1" />
@@ -23,7 +27,7 @@
           <entry key="project.open.time.7" value="6" />
           <entry key="project.open.time.8" value="1" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="48" />
+          <entry key="project.opened" value="49" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -43,12 +47,12 @@
         <counts>
           <entry key="Python Console" value="309" />
           <entry key="R" value="253" />
-          <entry key="py" value="27384" />
+          <entry key="py" value="27395" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="27693" />
+          <entry key="Python" value="27704" />
           <entry key="R" value="253" />
         </counts>
       </usages-collector>
@@ -65,8 +69,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
+            <state relative-caret-position="476">
+              <caret line="28" selection-start-line="28" selection-end-line="28" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -77,8 +81,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BBAC_classes.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3910">
-              <caret line="233" selection-start-line="233" selection-end-line="233" />
+            <state relative-caret-position="212">
+              <caret line="100" column="59" lean-forward="true" selection-start-line="100" selection-start-column="59" selection-end-line="100" selection-end-column="59" />
             </state>
           </provider>
         </entry>
@@ -86,8 +90,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/R_bbac/bbac.R">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="5" selection-start-line="5" selection-end-line="5" />
+            <state relative-caret-position="260">
+              <caret line="228" selection-start-line="228" selection-end-line="228" />
             </state>
           </provider>
         </entry>
@@ -132,8 +136,9 @@
       <find>TypeError: in method 'Band_SetNoDataValue', argument 2 of type 'double'</find>
       <find>geot</find>
       <find>NewFileName</find>
-      <find>print</find>
       <find>ndv</find>
+      <find>print</find>
+      <find>row_avg</find>
     </findStrings>
     <replaceStrings>
       <replace>&quot;&quot;&quot;</replace>
@@ -164,9 +169,9 @@
         <option value="$PROJECT_DIR$/test_model_comparison.py" />
         <option value="$PROJECT_DIR$/netcdf.py" />
         <option value="$PROJECT_DIR$/ArcGis_netcdf.py" />
-        <option value="$PROJECT_DIR$/R_bbac/bbac.R" />
         <option value="$PROJECT_DIR$/rpy2_setup.py" />
         <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/R_bbac/bbac.R" />
         <option value="$PROJECT_DIR$/BBAC_classes.py" />
       </list>
     </option>
@@ -182,7 +187,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -195,15 +199,11 @@
               <item name="BBAC_missing_values" type="462c0819:PsiDirectoryNode" />
               <item name="R_bbac" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="BBAC_missing_values" type="b2602c69:ProjectViewProjectNode" />
-              <item name="BBAC_missing_values" type="462c0819:PsiDirectoryNode" />
-              <item name="scratch" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -368,12 +368,12 @@
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49275362" visible="true" weight="0.20402685" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49275362" visible="true" weight="0.20671141" />
       <window_info id="Structure" order="1" sideWeight="0.5072464" side_tool="true" weight="0.1147651" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4976867" weight="0.31586403" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4976867" visible="true" weight="0.31586403" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49966952" weight="0.39943343" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -463,54 +463,42 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/bbac_python.py" />
-    <entry file="file://$PROJECT_DIR$/P_bbac/bbac_python.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="243">
-          <caret line="133" column="35" selection-start-line="133" selection-start-column="35" selection-end-line="133" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/P_bbac/bbac_p.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="20" selection-start-line="20" selection-end-line="20" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/P_bbac/bbac_python.py" />
+    <entry file="file://$PROJECT_DIR$/P_bbac/bbac_p.py" />
     <entry file="file://$PROJECT_DIR$/model_comparison.py" />
     <entry file="file://$PROJECT_DIR$/test_model_comparison.py" />
     <entry file="file://$PROJECT_DIR$/netcdf.py" />
     <entry file="file://$PROJECT_DIR$/ArcGis_netcdf.py" />
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BBAC_classes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3910">
-          <caret line="233" selection-start-line="233" selection-end-line="233" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/R_bbac/bbac.R">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" selection-start-line="5" selection-end-line="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/rpy2_setup.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
           <caret line="15" column="74" selection-start-line="15" selection-start-column="74" selection-end-line="15" selection-end-column="74" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/R_bbac/bbac.R">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="228" selection-start-line="228" selection-end-line="228" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BBAC_classes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="100" column="59" lean-forward="true" selection-start-line="100" selection-start-column="59" selection-end-line="100" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="28" selection-start-line="28" selection-end-line="28" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
           </folding>
         </state>
       </provider>

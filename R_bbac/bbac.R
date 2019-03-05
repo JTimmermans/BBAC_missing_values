@@ -1,13 +1,11 @@
 ###############################################################################
 ### BREGMAN BLOCK AVERAGE CO-CLUSTERING ALGORITHM (BANERJEE ET AL., 2007)
 ###############################################################################
-print(memory.limit())
-# memory.limit(size = 5000)
 
 bbac <- function(Z, k, l, W = NULL, distance = "euclidean", scheme = 6, 
                  errobj = 1e-6, niters = 100, nruns = 5, epsilon = 1e-8) {
 
-  print(memory.limit())
+
   error <- Inf
   error_now <- Inf
   dist <- pmatch(tolower(distance), c("euclidean","divergence")) - 1
@@ -170,7 +168,6 @@ calculate_average <- function(Left, Z, Right, W, epsilon) {
   if (is.null(W)) {W <- array(1, dim(Z))} else {Z <- W * Z}
   numerator <- t(Left) %*% Z %*% Right + mean(Z, na.rm=TRUE) * epsilon
   denominator <- t(Left) %*% W %*% Right + epsilon
-  # print(numerator)
 
   return(numerator/denominator)
 }
@@ -225,11 +222,11 @@ plot_coclusters <- function(Z, R, C) {
   # Plot sorted matrix
   image(seq(0, 1, length.out = dim(Y)[1]), seq(0, 1, length.out = dim(Y)[2]),
         Y, col = grey((0:12)/12), axes = FALSE, xlab = "", ylab = "")
-  # Print row clusters
+
   row_clust <- (head(cumsum(colSums(R)), -1) - 0.5)/(ncol(Y) - 1)
   invisible(sapply(1:length(row_clust), function(i) 
     segments(-0.5, row_clust[i], 1.5, row_clust[i], col = 2, lwd = 2)))
-  # Print column clusters
+
   col_clust <- (head(cumsum(colSums(C)), -1) - 0.5)/(nrow(Y) - 1)
   invisible(sapply(1:length(col_clust), function(i) 
     segments(col_clust[i], -0.5, col_clust[i], 1.5, col = 2, lwd = 2)))

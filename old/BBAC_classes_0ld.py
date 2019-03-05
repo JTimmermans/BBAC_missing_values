@@ -75,18 +75,50 @@ class BBAC():
     def calculate_averages(self):
         """Returns the clustering averages for prediction.
 
+        :return: row_avg(array):     Array 1 x m array with the averages per row.
+        :return: col_avgarray):      Array 1 x m array with the averages per column.
+        :return: row_cltr_avg(array): Array 1 x m array with the averages per row cluster.
+        :return: col_cltr_avg(array): Array 1 x m array with the averages per column cluster.
         :return: co_cltr_avg(array):  Array 1 x m array with the averages per co-cluster.
             """
 
+        # Add row and column averages
+        row_avg = nanmean(self.Z, 1)
+        col_avg = nanmean(self.Z, 0)
+
         # Initialize empty average arrays:
+        row_cltr_avg = np.zeros(self.n_row, np.double)
+        col_cltr_avg = np.zeros(self.n_col, np.double)
         co_cltr_avg = np.zeros((self.n_cltr_r, self.n_cltr_c), np.double)
 
         # Initialize empty count arrays
+        row_cltr_count = np.zeros(self.n_cltr_r, np.double)
+        col_cltr_count = np.zeros(self.n_cltr_c, np.double)
         co_cltr_count = np.zeros((self.n_cltr_r, self.n_cltr_c), np.double)
 
         # Initialize empty sum arrays
+        row_cltr_sum = np.zeros(self.n_cltr_r, np.double)
+        col_cltr_sum = np.zeros(self.n_cltr_c, np.double)
         co_cltr_sum = np.zeros((self.n_cltr_r, self.n_cltr_c), np.double)
 
+
+        # Compute sums, counts, and averages for row clusters
+        for cluster in range(0, self.n_cltr_r):
+            for row in range(0, self.n_row):
+                if self.row_cltr[row, cluster] == 1.0:
+                    # Increment count by self.W matrix, if one of n values in the row is missing, count is 1-1/n
+                    row_cltr_count[cluster] += nanmean(self.W[row, :])
+                    row_cltr_sum[cluster] += nanmean(self.Z[row])
+        row_cltr_avg = np.divide(row_cltr_sum, row_cltr_count)
+
+        # Compute sums, counts, and averages for column clusters
+        for cluster in range(0, self.n_cltr_c):
+            for col in range(0, self.n_col):
+                if self.col_cltr[col, cluster] == 1.0:
+                    # Increment count by self.W matrix, if one of n values in the column is missing, count is 1-1/n
+                    col_cltr_count[cluster] += self.W[:, col].mean()
+                    col_cltr_sum[cluster] += self.Z[:,col].mean()
+        col_cltr_avg = np.divide(col_cltr_sum, col_cltr_count)
 
         # Compute sums, counts, and averages for co-cluster
         for rc in range(0, self.n_cltr_r):
@@ -100,7 +132,7 @@ class BBAC():
                                 co_cltr_sum[rc, cc] += self.Z[row, col]
         co_cltr_avg = np.divide(co_cltr_sum, co_cltr_count)
 
-        return co_cltr_avg
+        return row_avg, col_avg, row_cltr_avg, col_cltr_avg, co_cltr_avg
 
     def re_order_matrix(self):
         """Returns a re-ordered array of self.Z input.
@@ -129,7 +161,7 @@ class BBAC():
         """
 
         # Retrieve clustering averages
-        self.co_cltr_avg = self.calculate_averages()
+        self.row_avg, self.col_avg, self.row_cltr_avg, self.col_cltr_avg, self.co_cltr_avg = self.calculate_averages()
 
         # Create a copy of the array to store imputed values
         self.Z_imputed = np.copy(self.Z)
@@ -144,12 +176,13 @@ class BBAC():
 
         for index in self.missing_indices:
             # Set indices of missing index
-            rc = int(row_indices[index[0]])
-            cc = int(col_indices[index[1]])
+            rcc = int(row_indices[index[0]])
+            ccc = int(col_indices[index[1]])
+            rc = rcc
+            cc = ccc
 
             # Estimate value for missing index
-            self.Z_imputed[index[0], index[1]] = self.co_cltr_avg[rc,cc]
-
+            self.Z_imputed[index[0], index[1]] = self.co_cltr_avg[rcc,ccc]
     def visualize(self, path, outname, xlabel, ylabel):
         """
         Creates .png images of the original array Z and the imputed array Z_imputed as heatmaps. Missing values are displayed in grey.
