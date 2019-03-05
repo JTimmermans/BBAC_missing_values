@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 sns.set()
 # ignore dividing by zero or np.nan
 np.seterr(divide='ignore', invalid='ignore')
+from scipy import nanmean
 
 
 
@@ -30,7 +31,7 @@ class BBAC():
         self.n_row, self.n_col = np.shape(self.Z)[0], np.shape(self.Z)[1]
         self.scheme = scheme
 
-    def get_missing(self, missing_value=0):
+    def get_missing(self, missing_value):
         """Returns the indices of  missing values in matrix Z
 
 
@@ -39,7 +40,8 @@ class BBAC():
         :return: missing_indices(array): Array containing the indices of missing values in self.Z.
             """
 
-        itemindex = np.argwhere(self.Z == missing_value)
+        itemindex = np.argwhere(self.Z == 0)
+        # itemindex = np.argwhere(np.isnan(self.Z))
         missing_indices = itemindex
         return missing_value, missing_indices
 
@@ -51,15 +53,30 @@ class BBAC():
         :return: co_cltr(array):  Co-cluster array.
             """
 
+
         # Retrieve missing value information
-        self.missing_value, self.missing_indices = self.get_missing()
+        self.missing_value, self.missing_indices = self.get_missing(missing_value=np.nan)
 
         # Create W
         # ToDo USE A W MATRIX, R part errors
         W = np.ones((self.n_row, self.n_col), np.int)
+
         for i in self.missing_indices:
             W[i[0], i[1]] = 0
         self.W = numpy_to_r(W)
+
+        # shape = self.Z.shape
+        # W = np.ones(shape)
+        # self.W = numpy_to_r(W)
+        #
+        #
+        # col_avg = nanmean(self.Z, 1)
+        # print(col_avg)
+        # for i in self.missing_indices:
+        #     self.Z[i[0],i[1]] = col_avg[i[1]]
+        #     print(i[1])
+        # print(self.Z)
+
 
         # Create co-clustering
         co_clustering = bbac(self.Z, W = self.W,  k=self.n_cltr_r, l=self.n_cltr_c, nruns=10, distance=self.distance, scheme=self.scheme)
@@ -79,8 +96,8 @@ class BBAC():
             """
 
         # Add row and column averages
-        row_avg = self.Z.mean(1)
-        col_avg = self.Z.mean(0)
+        row_avg = nanmean(self.Z, 1)
+        col_avg = nanmean(self.Z, 0)
 
         # Initialize empty average arrays:
         row_cltr_avg = np.zeros(self.n_row, np.double)
@@ -97,13 +114,14 @@ class BBAC():
         col_cltr_sum = np.zeros(self.n_cltr_c, np.double)
         co_cltr_sum = np.zeros((self.n_cltr_r, self.n_cltr_c), np.double)
 
+
         # Compute sums, counts, and averages for row clusters
         for cluster in range(0, self.n_cltr_r):
             for row in range(0, self.n_row):
                 if self.row_cltr[row, cluster] == 1.0:
                     # Increment count by self.W matrix, if one of n values in the row is missing, count is 1-1/n
-                    row_cltr_count[cluster] += self.W[row, :].mean()
-                    row_cltr_sum[cluster] += self.Z[row].mean()
+                    row_cltr_count[cluster] += nanmean(self.W[row, :])
+                    row_cltr_sum[cluster] += nanmean(self.Z[row])
         row_cltr_avg = np.divide(row_cltr_sum, row_cltr_count)
 
         # Compute sums, counts, and averages for column clusters
@@ -116,7 +134,6 @@ class BBAC():
         col_cltr_avg = np.divide(col_cltr_sum, col_cltr_count)
 
         # Compute sums, counts, and averages for co-cluster
-        # Something goes wrong here
         for rc in range(0, self.n_cltr_r):
             for row in range(0, self.n_row):
                 if self.row_cltr[row, rc] == 1.0:
@@ -162,23 +179,21 @@ class BBAC():
         # Create a copy of the array to store imputed values
         self.Z_imputed = np.copy(self.Z)
 
+        # Compute the index of row columns clusters
+        multiplier = np.arange(1, self.n_cltr_r + 1)
+        row_indices = np.sum((multiplier * self.row_cltr), axis=1)-1
+
+        # Compute the index of column clusters
+        multiplier = np.arange(1, self.n_cltr_c + 1)
+        col_indices = np.sum((multiplier * self.col_cltr), axis=1) - 1
+
         for index in self.missing_indices:
-            # Determine corresponding row cluster index
-            for rc in range(0, self.n_cltr_r):
-                if self.row_cltr[index[0], rc] == 1.0:
-                    break
+            # Set indices of missing index
+            rcc = int(row_indices[index[0]])
+            ccc = int(col_indices[index[1]])
+            rc = rcc
+            cc = ccc
 
-            # Determine corresponding column cluster index
-            for cc in range(0, self.n_cltr_c):
-                if self.col_cltr[index[1], cc] == 1.0:
-                    break
-
-            # Determine corresponding co-cluster index
-            for rcc in range(0, self.n_cltr_r):
-                if self.row_cltr[index[0], rc] == 1.0:
-                    for ccc in range(0, self.n_cltr_c):
-                        if self.col_cltr[index[1], cc] == 1.0:
-                            break
             # Estimate value for missing index
             # estimation = average of co-cluster + (row mean - row cluster mean) + (column mean - column cluster mean)
             # Maybe this prediction method sucks or I am getting it wrong
@@ -220,11 +235,12 @@ class BBAC():
         # Plot imputed matrix
         plot_heatmap(array=self.Z_imputed, mask=None, Z='_Z_imputed')
 
-        # Retrieve re-ordered W and Z arrays
-        Z_rd, W_rd = self.re_order_matrix()
+        # # Retrieve re-ordered W and Z arrays
+        # Z_rd, W_rd = self.re_order_matrix()
+        #
+        # # Create mask for re-orederd array
+        # r_mask = 1 - W_rd
+        #
+        # # Plot re-ordered matrix with missing values
+        # plot_heatmap(Z_rd, mask=r_mask, Z='_Z_re_ordered.png')
 
-        # Create mask for re-orederd array
-        r_mask = 1 - W_rd
-
-        # Plot re-ordered matrix with missing values
-        plot_heatmap(Z_rd, mask=r_mask, Z='_Z_re_ordered.png')

@@ -13,7 +13,7 @@ rpy2.robjects.numpy2ri.activate()
 
 # Import BBAC functionality
 r_source = robjects.r['source']
-r_source(r"R_bbac\bbac.R")
+r_source(r"D:\g_drive\Gima\Thesis\Github\BBAC_missing_values\R_bbac\bbac.R")
 bbac = robjects.r['bbac']
 
 # Other R functionality

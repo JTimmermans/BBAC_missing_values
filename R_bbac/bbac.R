@@ -1,10 +1,13 @@
 ###############################################################################
 ### BREGMAN BLOCK AVERAGE CO-CLUSTERING ALGORITHM (BANERJEE ET AL., 2007)
 ###############################################################################
+print(memory.limit())
+# memory.limit(size = 5000)
 
 bbac <- function(Z, k, l, W = NULL, distance = "euclidean", scheme = 6, 
                  errobj = 1e-6, niters = 100, nruns = 5, epsilon = 1e-8) {
-  
+
+  print(memory.limit())
   error <- Inf
   error_now <- Inf
   dist <- pmatch(tolower(distance), c("euclidean","divergence")) - 1
@@ -28,7 +31,7 @@ bbac <- function(Z, k, l, W = NULL, distance = "euclidean", scheme = 6,
       ca <- assign_cluster(dist, t(Z), t(cs$Zcolc), t(cs$Zcolv), W, epsilon)
       C  <- ca$Cluster
       
-      # 
+      #
       if (abs(ca$Error - error_now) < errobj) {
         status <- paste("converged in",s,"iterations")
         return(list(R = R, C = C, status = status))
@@ -36,7 +39,7 @@ bbac <- function(Z, k, l, W = NULL, distance = "euclidean", scheme = 6,
       
       # Update objective value
       error_now <- ca$Error
-      
+      gc()
     }
     
     # Keep pair with min error
@@ -45,7 +48,7 @@ bbac <- function(Z, k, l, W = NULL, distance = "euclidean", scheme = 6,
       C_star <- C
       error <- error_now
     }
-    
+    gc(TRUE)
   }
   
   status <- paste("reached maximum of",niters,"iterations")
@@ -79,10 +82,10 @@ scheme1 <- function(dist, row_col, R, Z, C, W, epsilon) {
   RCavg <- calculate_average( R, Z, e2, W, epsilon)
   CCavg <- calculate_average(e1, Z,  C, W, epsilon)
   if (row_col=="row") {
-    A <- c("(e1 %*% CCavg %*% t(C))", "(array(mean(Z), dim(Z)))")
+    A <- c("(e1 %*% CCavg %*% t(C))", "(array(mean(Z, na.rm=TRUE), dim(Z)))")
     return(list(Zrowc = op1(dist, A), Zrowv = RCavg %*% t(e2)))
   } else if (row_col=="col") {
-    A <- c("(R %*% RCavg %*% t(e2))", "(array(mean(Z), dim(Z)))")
+    A <- c("(R %*% RCavg %*% t(e2))", "(array(mean(Z, na.rm=TRUE), dim(Z)))")
     return(list(Zcolc = op1(dist, A), Zcolv = e1 %*% CCavg))
   }
 }
@@ -165,8 +168,10 @@ scheme6 <- function(dist, row_col, R, Z, C, W, epsilon) {
 
 calculate_average <- function(Left, Z, Right, W, epsilon) {
   if (is.null(W)) {W <- array(1, dim(Z))} else {Z <- W * Z}
-  numerator <- t(Left) %*% Z %*% Right + mean(Z) * epsilon
+  numerator <- t(Left) %*% Z %*% Right + mean(Z, na.rm=TRUE) * epsilon
   denominator <- t(Left) %*% W %*% Right + epsilon
+  # print(numerator)
+
   return(numerator/denominator)
 }
 
@@ -184,20 +189,20 @@ assign_cluster <- function(dist, Z, X, Y, W, epsilon) {
   D <- similarity_measure(dist, Z, X, Y, W, epsilon)
   id <- sapply(1:dim(D)[1], function(i) sort(D[i,], index.return = TRUE)$ix[1])
   res <- sapply(1:dim(D)[1], function(i) sort(D[i,])[1]^(2-dist))
-  return(list(Cluster = diag(dim(Y)[1])[id,], Error = sum(res)))
+  return(list(Cluster = diag(dim(Y)[1])[id,], Error = sum(res, na.rm = TRUE)))
 }
 
 assign_cluster_row <- function(dist, Z, X, Y, W, epsilon) {
   D <- similarity_measure_row(dist, Z, X, Y, W, epsilon)
   id <- sapply(1:dim(D)[1], function(i) sort(D[i,], index.return = TRUE)$ix[1])
   res <- sapply(1:dim(D)[1], function(i) sort(D[i,])[1]^(2-dist))
-  return(list(Cluster = diag(dim(Y)[1])[id,], Error = sum(res)))
+  return(list(Cluster = diag(dim(Y)[1])[id,], Error = sum(res, na.rm = TRUE)))
 }
 
 similarity_measure <- function(dist, Z, X, Y, W, epsilon) {
   if (is.null(W)) W <- array(1, dim(Z))
   if (dist==0) {
-    euc <- function(i) rowSums(W * (Z - X - rep(Y[i,], each = dim(Z)[1]))^2)
+    euc <- function(i) rowSums(W * (Z - X - rep(Y[i,], each = dim(Z)[1]))^2, na.rm=TRUE)
     return(sapply(1:dim(Y)[1], euc))
   } else if (dist==1) {
     return((t(W) * X) %*% t(Y + epsilon) - (t(W) * Z) %*% log(t(Y + epsilon)))
@@ -207,7 +212,7 @@ similarity_measure <- function(dist, Z, X, Y, W, epsilon) {
 similarity_measure_row <- function(dist, Z, X, Y, W, epsilon) {
   if (is.null(W)) W <- array(1, dim(Z))
   if (dist==0) {
-    euc <- function(i) rowSums(W * (Z - X - rep(Y[i,], each = dim(Z)[1]))^2)
+    euc <- function(i) rowSums(W * (Z - X - rep(Y[i,], each = dim(Z)[1]))^2, na.rm=TRUE)
     return(sapply(1:dim(Y)[1], euc))
   } else if (dist==1) {
     return((W * X) %*% t(Y + epsilon) - (W * Z) %*% log(t(Y + epsilon)))
