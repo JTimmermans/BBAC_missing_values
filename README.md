@@ -70,6 +70,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 * [Fnyanez](https://github.com/fnyanez/bbac) for implementing the BBAC algorithm in R.
-* Raul Zurita-Milla for supervising the project as part of my MSC thesis. 
+* Raul Zurita-Milla for supervising the project as part of my MSc thesis. 
 
 
