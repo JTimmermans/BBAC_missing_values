@@ -22,7 +22,7 @@ Input:
     from BBAC_classes import *
 
     # Generate synthethic data, 0's indicate missing values
-    list_of_list = [[2.5, 3.0, 3.2, 5.1, 5.3],
+    list_of_list = [[0.0, 3.0, 3.2, 5.1, 5.3],
                     [2.5, 3.2, 3.0, 5.0, 0.0],
                     [5.0, 5.2, 5.1, 3.2, 3.1],
                     [5.2, 5.2, 0.0, 3.1, 3.2],
