@@ -18,7 +18,7 @@ def basic_test():
     Z = numpy_to_r(array)
 
     # Use the prediction algorithm
-    test = BBAC(Z, n_cltr_r=3, n_cltr_c=2, distance='d', scheme=2)
+    test = BBAC(Z, n_cltr_r=3, n_cltr_c=2, distance='d', scheme=5)
     test.coclustering()
     test.predict()
 

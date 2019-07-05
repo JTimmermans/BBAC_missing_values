@@ -11,7 +11,7 @@ from scipy import nanmean
 
 class BBAC():
     """A missing value imputation using the BBAC alghorithm by Banjeree et al,
-    using the previsouly created R script from <instert github>
+    using the previously created R script from <instert github>
 
 
     :param: Z(array):      A m x n Rpy2 numpy array.
@@ -131,7 +131,10 @@ class BBAC():
         # Create a copy of the array to store imputed values
         self.Z_imputed = np.copy(self.Z)
 
-        # Compute the index of row columns clusters
+        # Compute row and column average
+        self.col_avg = np.nanmean(self.Z, axis = 0)
+        self.row_avg = np.nanmean(self.Z, axis = 1)
+        # Compute the index of row clusters
         multiplier = np.arange(1, self.n_cltr_r + 1)
         row_indices = np.sum((multiplier * self.row_cltr), axis=1)-1
 
@@ -144,8 +147,20 @@ class BBAC():
             rc = int(row_indices[index[0]])
             cc = int(col_indices[index[1]])
 
+            if self.scheme != 5:
             # Estimate value for missing index
-            self.Z_imputed[index[0], index[1]] = self.co_cltr_avg[rc,cc]
+                try:
+                    self.Z_imputed[index[0], index[1]] = self.co_cltr_avg[rc,cc]
+                except:
+                    self.Z_imputed[index[0], index[1]] = np.nanmean(self.co_cltr_avg)
+
+            # Estimate values for scheme 5
+            if self.scheme == 5:
+                try:
+                    self.Z_imputed[index[0], index[1]] = self.co_cltr_avg[rc, cc] + (self.col_avg[index[1]] - self.col_avg[index[0]])
+                except:
+                    self.Z_imputed[index[0], index[1]] = np.nanmean(self.co_cltr_avg)
+
 
     def visualize(self, path, outname, xlabel, ylabel):
         """
