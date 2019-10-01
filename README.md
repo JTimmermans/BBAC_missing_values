@@ -1,4 +1,4 @@
-# BBAC missing value imputation
+# Bregman Block Average Co-clustering (BBAC) missing value imputation
 
 Python matrix imputation implementation of the [Bregman Block Average Co-clustering (BBAC) algorithm](http://www.jmlr.org/papers/volume8/banerjee07a/banerjee07a.pdf). Currently BBAC statistics are calculated using the R repository from [fnyanez](https://github.com/fnyanez/bbac), small adjustments have been made to incorporate the full capability of the W matrix.
 
